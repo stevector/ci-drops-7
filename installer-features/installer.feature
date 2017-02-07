@@ -5,7 +5,6 @@ Feature: Installer
 
   Scenario: Install via Drush
 
-
     Given I have wiped the site
     # For this to work, an automation script needs to have made settings.php
     # Without it (it is not in drops-7 by default) the command fails.
