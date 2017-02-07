@@ -5,10 +5,8 @@ default:
   suites:
     default:
       paths:
-        - %paths.base%/features
         - %paths.base%/installer-features
         - %paths.base%/pantheon-features
-        - %paths.base%/user-features
       contexts:
         - FeatureContext
         - Drupal\DrupalExtension\Context\DrupalContext
