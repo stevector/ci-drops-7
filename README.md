@@ -1,4 +1,4 @@
-# ci-drops-8
+# ci-drops-7
 CI tests for the [drops-8](https://github.com/pantheon-systems/drops-8) repository.
 
 [![CircleCI](https://circleci.com/gh/pantheon-systems/ci-drops-8.svg?style=svg)](https://circleci.com/gh/pantheon-systems/ci-drops-8)
