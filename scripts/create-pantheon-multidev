@@ -1,38 +1,16 @@
 #!/bin/bash
 
-# Exit immediately on errors, and echo commands as they are executed.
-set -ex
+# Exit immediately on errors.
+# But don't echo everything because of the TERMINUS_TOKEN
+# Once CircleCI 2.0 is out, this should move to a shared Dockerfile
+set -e
 
-# Set the $PATH to include the global composer bin directory.
-PATH=$PATH:~/.composer/vendor/bin
+# drops-7 does not provide a settings.php file
 
-# Somehow the remote might already be there (CI service caching).
-git remote show | grep -q pantheon || git remote add pantheon $(terminus site connection-info --field=git_url --env=dev)
-git fetch pantheon
-git checkout -b $TERMINUS_ENV
+cd $SITE_DIR
+cp sites/default/default.settings.php sites/default/settings.php
 
-# The behat-drush-endpoint is not included in drops-8, and we are going
-# to force-push the project-under-test over the contents of the dev site.
-# We therefore re-add the behat-drush-endpoint via composer here.
-composer require drush-ops/behat-drush-endpoint
-git add -A .
-git commit -q -m "Add behat-drush-endpoint for test."
-git push -q pantheon $TERMINUS_ENV -f
-
-# Create a new environment for this test.
-terminus site create-env --to-env=$TERMINUS_ENV --from-env=dev
-terminus site set-connection-mode --mode=sftp
-
-# If called from Circle CI, then add a comment containing a link to the test environment.
-# Turn off command echoing here.
-set +x
-if [ -n "$CIRCLE_SHA1" ] && [ -n "$GITHUB_TOKEN" ] ; then
-  SITE_ID=$(terminus site info --field=id)
-  DASHBOARD="https://dashboard.pantheon.io/sites/$SITE_ID#$TERMINUS_ENV"
-  comment="Created multidev environment [$TERMINUS_SITE#$TERMINUS_ENV]($DASHBOARD)."
-  visit_site="[![Visit Site](https://raw.githubusercontent.com/pantheon-systems/ci-drops-8/0.1.0/data/img/visit-site-36.png)](https://$TERMINUS_ENV-$TERMINUS_SITE.pantheonsite.io/)"
-  echo $comment
-  echo
-  echo $visit_site
-  curl -d '{ "body": "'"$comment\\n\\n$visit_site"'" }' -X POST https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/commits/$CIRCLE_SHA1/comments?access_token=$GITHUB_TOKEN
-fi
+terminus auth:login -n --machine-token="$TERMINUS_TOKEN"
+terminus build-env:delete:ci -n "$TERMINUS_SITE" --keep=4 --yes
+terminus env:wake -n "$TERMINUS_SITE.dev"
+terminus build-env:create -n "$TERMINUS_SITE.dev" "$TERMINUS_ENV" --yes
