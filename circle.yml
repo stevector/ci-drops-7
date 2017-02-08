@@ -11,7 +11,7 @@ machine:
     # For some reason, relative paths like "~/tests" did not work.
     TESTS_DIR: /home/ubuntu/ci-drops-7
     SITE_DIR: /home/ubuntu/drops-7
-    UPSTREAM_REPO: git@github.com:stevector/ci-drops-7.git
+    UPSTREAM_REPO: git@github.com:stevector/drops-7.git
     PATH: $PATH:~/.composer/vendor/bin:~/.config/composer/vendor/bin:/home/ubuntu/ci-drops-7/scripts
 
 
