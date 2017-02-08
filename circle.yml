@@ -19,13 +19,13 @@ dependencies:
   cache_directories:
     - ~/.composer/cache
   override:
-    - git clone $UPSTREAM_REPO $SITE
+    - git clone $UPSTREAM_REPO $SITE_DIR
     # It is possible that we are testing a new branch, and that
     # branch has corresponding changes in the upstream repo in a branch of
     # the same name.
     # If that branch doesn't exist the command will throw an error so also
     # use true.
-    - cd $SITE && git checkout $CIRCLE_BRANCH || true
+    - cd $SITE_DIR && git checkout $CIRCLE_BRANCH || true
     - composer install
 
     - git-config
